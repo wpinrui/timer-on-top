@@ -218,6 +218,14 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {
             ShowWindow(hwnd, IsWindowVisible(hwnd) ? SW_HIDE : SW_SHOW);
         return 0;
 
+    case WM_DPICHANGED: {
+        RECT* r = (RECT*)lp;
+        SetWindowPos(hwnd, NULL, r->left, r->top,
+            r->right - r->left, r->bottom - r->top,
+            SWP_NOZORDER | SWP_NOACTIVATE);
+        return 0;
+    }
+
     case WM_NCHITTEST: {
         LRESULT hit = DefWindowProc(hwnd, msg, wp, lp);
         if (hit == HTCLIENT) {
@@ -234,6 +242,8 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {
 }
 
 int WINAPI WinMain(HINSTANCE hInst, HINSTANCE, LPSTR, int) {
+    SetProcessDpiAwarenessContext(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2);
+
     WNDCLASSEXW wc = {};
     wc.cbSize        = sizeof(wc);
     wc.lpfnWndProc   = WndProc;
@@ -242,11 +252,15 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE, LPSTR, int) {
     wc.lpszClassName = L"TimerOnTop";
     RegisterClassExW(&wc);
 
+    UINT dpi = GetDpiForSystem();
+    int  w   = MulDiv(340, dpi, 96);
+    int  h   = MulDiv(120, dpi, 96);
+
     HWND hwnd = CreateWindowExW(
         WS_EX_TOPMOST | WS_EX_TOOLWINDOW,
         L"TimerOnTop", L"Timer On Top",
         WS_POPUP,
-        100, 100, 340, 120,
+        100, 100, w, h,
         NULL, NULL, hInst, NULL
     );
 
