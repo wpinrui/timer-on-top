@@ -245,7 +245,7 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE, LPSTR, int) {
     HWND hwnd = CreateWindowExW(
         WS_EX_TOPMOST | WS_EX_TOOLWINDOW,
         L"TimerOnTop", L"Timer On Top",
-        WS_POPUP | WS_THICKFRAME,
+        WS_POPUP,
         100, 100, 340, 120,
         NULL, NULL, hInst, NULL
     );
